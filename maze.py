@@ -1,15 +1,50 @@
 ''' Simple 2D maze generation tool '''
 import sys
+import random
 import numpy as np
 
 def create_maze(rows, cols):
     ''' Maze constructor '''
     maze = np.zeros([rows, cols], dtype=int)
-    maze[0, 0] = 2
-    maze[0, 1] = 8
-    maze[1, 0] = 1 ^ 2
-    maze[1, 1] = 8
+    create_maze_recursively(maze, random.randrange(rows), random.randrange(cols))
     return maze
+
+def is_valid(maze, current_row, current_cols):
+    if current_cols < 0:
+        return False
+    if current_row < 0:
+        return False
+    if current_cols >= maze.shape[1]:
+        return False
+    if current_row >= maze.shape[0]:
+        return False
+    if maze[current_row, current_cols] != 0:
+        return False
+    return True
+
+def create_maze_recursively(maze, current_row, current_cols):
+    ''' Recursively create the maze '''
+    directions = list(range(4))
+    random.shuffle(directions)
+
+    for direction in directions:
+        if direction == 0:
+            next_row = current_row-1
+            next_col = current_cols
+        elif direction == 1:
+            next_row = current_row
+            next_col = current_cols+1
+        elif direction == 2:
+            next_row = current_row+1
+            next_col = current_cols
+        elif direction == 3:
+            next_row = current_row
+            next_col = current_cols-1
+
+        if is_valid(maze, next_row, next_col):
+            maze[current_row, current_cols] |= 1 << direction
+            maze[next_row, next_col] |= 1 << (direction+2)%4
+            create_maze_recursively(maze, next_row, next_col)
 
 def draw_in_ascii(maze):
     ''' Draw maze in ASCII format '''
