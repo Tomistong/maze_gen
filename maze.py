@@ -9,7 +9,8 @@ def create_maze(rows, cols):
     create_maze_recursively(maze, random.randrange(rows), random.randrange(cols))
     return maze
 
-def is_valid(maze, current_row, current_cols):
+def is_available(maze, current_row, current_cols):
+    ''' Check if the cell of the maze is available '''
     if current_cols < 0:
         return False
     if current_row < 0:
@@ -41,7 +42,7 @@ def create_maze_recursively(maze, current_row, current_cols):
             next_row = current_row
             next_col = current_cols-1
 
-        if is_valid(maze, next_row, next_col):
+        if is_available(maze, next_row, next_col):
             maze[current_row, current_cols] |= 1 << direction
             maze[next_row, next_col] |= 1 << (direction+2)%4
             create_maze_recursively(maze, next_row, next_col)
@@ -71,7 +72,6 @@ def main():
     rows = int(sys.argv[1])
     cols = int(sys.argv[2])
     maze = create_maze(rows, cols)
-    print(maze)
     draw_in_ascii(maze)
 
 if __name__ == "__main__":
