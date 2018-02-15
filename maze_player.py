@@ -5,13 +5,20 @@ import maze_gen
 
 
 class MazePlayer:
-    def __init__(self):
+    WALL_WIDTH = 2
+    CELL_WIDTH = 36
+
+    def __init__(self, width, length):
         pygame.init()
         pygame.display.set_caption('Maze Player')
 
-        self._screen = pygame.display.set_mode((640, 640))
+        self._maze = maze_gen.create_maze(length, width)
+        self._screen =\
+            pygame.display.set_mode(
+                (width * self.CELL_WIDTH + 2 * self.WALL_WIDTH,
+                 length* self.CELL_WIDTH + 2 * self.WALL_WIDTH))
+
         self._clock = pygame.time.Clock()
-        self._maze = maze_gen.create_maze(15, 15)
 
     def run(self):
         while 1:
@@ -33,31 +40,40 @@ class MazePlayer:
                 self._draw_cell(row_index, col_index)
 
     def _draw_cell(self, row_index, col_index):
-        wall_width = 2
-        cell_width = 36
-
-        top = row_index * cell_width + wall_width
-        left = col_index * cell_width + wall_width
-        doubled_wall_width = 2 * wall_width
-        shrink_cell_width = cell_width - doubled_wall_width
+        top = row_index * self.CELL_WIDTH + self.WALL_WIDTH
+        left = col_index * self.CELL_WIDTH + self.WALL_WIDTH
+        doubled_wall_width = 2 * self.WALL_WIDTH
+        shrink_cell_width = self.CELL_WIDTH - doubled_wall_width
 
         state = self._maze[row_index, col_index]
 
         if state & 1 == 0:
             self._draw_wall(
-                [left + wall_width, top, shrink_cell_width, wall_width])
+                [left + self.WALL_WIDTH,
+                 top,
+                 shrink_cell_width,
+                 self.WALL_WIDTH])
 
         if state & 2 == 0:
             self._draw_wall(
-                [left + cell_width - wall_width, top + wall_width, wall_width, shrink_cell_width])
+                [left + self.CELL_WIDTH - self.WALL_WIDTH,
+                 top + self.WALL_WIDTH,
+                 self.WALL_WIDTH,
+                 shrink_cell_width])
 
         if state & 4 == 0:
             self._draw_wall(
-                [left + wall_width, top + cell_width - wall_width, shrink_cell_width, wall_width])
+                [left + self.WALL_WIDTH,
+                 top + self.CELL_WIDTH - self.WALL_WIDTH,
+                 shrink_cell_width,
+                 self.WALL_WIDTH])
 
         if state & 8 == 0:
             self._draw_wall(
-                [left, top + wall_width, wall_width, shrink_cell_width])
+                [left,
+                 top + self.WALL_WIDTH,
+                 self.WALL_WIDTH,
+                 shrink_cell_width])
 
     def _draw_wall(self, rect):
         wall_color = (128, 128, 128)
@@ -65,7 +81,7 @@ class MazePlayer:
 
 
 def main():
-    player = MazePlayer()
+    player = MazePlayer(20, 15)
     player.run()
 
 
