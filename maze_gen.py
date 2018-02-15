@@ -1,16 +1,18 @@
-''' Simple 2D maze generation tool '''
+"""Simple 2D maze generation tool """
 import sys
 import random
 import numpy as np
 
+
 def create_maze(rows, cols):
-    ''' Maze constructor '''
+    """ Maze constructor """
     maze = np.zeros([rows, cols], dtype=int)
     _create_maze_recursively(maze, random.randrange(rows), random.randrange(cols))
     return maze
 
+
 def _is_available(maze, current_row, current_cols):
-    ''' Check if the cell of the maze is available '''
+    """ Check if the cell of the maze is available """
     if current_cols < 0:
         return False
     if current_row < 0:
@@ -23,8 +25,9 @@ def _is_available(maze, current_row, current_cols):
         return False
     return True
 
+
 def _create_maze_recursively(maze, current_row, current_cols):
-    ''' Recursively create the maze '''
+    """ Recursively create the maze """
     directions = list(range(4))
     random.shuffle(directions)
 
@@ -47,12 +50,14 @@ def _create_maze_recursively(maze, current_row, current_cols):
             maze[next_row, next_col] |= 1 << (direction+2)%4
             _create_maze_recursively(maze, next_row, next_col)
 
+
 def main():
-    ''' Main function '''
+    """ Main function """
     rows = int(sys.argv[1])
     cols = int(sys.argv[2])
     maze = create_maze(rows, cols)
     print(maze)
+
 
 if __name__ == "__main__":
     main()
