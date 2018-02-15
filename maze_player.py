@@ -1,6 +1,7 @@
 """ Maze player """
 import sys
 import pygame
+import maze_gen
 
 
 def main():
@@ -8,12 +9,10 @@ def main():
     pygame.display.set_mode((640, 480))
     pygame.display.set_caption('Maze Player')
 
-    target_fps = 30.
-    target_frame_duration = 1000. / target_fps
-
-    last_ticks = 0
-
     clock = pygame.time.Clock()
+
+    maze = maze_gen.create_maze(5, 5)
+    print(maze)
 
     while 1:
         for event in pygame.event.get():
@@ -21,15 +20,7 @@ def main():
                 sys.exit()
 
         pygame.display.flip()
-        current_ticks = pygame.time.get_ticks()
-        elapsed_duration = current_ticks - last_ticks
-
-        if elapsed_duration < target_frame_duration:
-            pygame.time.delay(int(target_frame_duration - elapsed_duration))
-
-        last_ticks = pygame.time.get_ticks()
-        clock.tick()
-        # print(clock.get_fps())
+        clock.tick(30)
 
 
 if __name__ == "__main__":
