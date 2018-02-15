@@ -1,2 +1,0 @@
-""" Play maze """
-import pygame
