@@ -17,12 +17,16 @@ def main():
 
     while 1:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT: sys.exit()
+            if event.type == pygame.QUIT:
+                sys.exit()
+
         pygame.display.flip()
         current_ticks = pygame.time.get_ticks()
         elapsed_duration = current_ticks - last_ticks
+
         if elapsed_duration < target_frame_duration:
-            pygame.time.delay(int(target_frame_duration-elapsed_duration))
+            pygame.time.delay(int(target_frame_duration - elapsed_duration))
+
         last_ticks = pygame.time.get_ticks()
         clock.tick()
         print(clock.get_fps())
