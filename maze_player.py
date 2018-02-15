@@ -30,7 +30,6 @@ def main():
         last_ticks = pygame.time.get_ticks()
         clock.tick()
         # print(clock.get_fps())
-    pass
 
 
 if __name__ == "__main__":
