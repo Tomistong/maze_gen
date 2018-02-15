@@ -5,7 +5,7 @@ import pygame
 
 def main():
     pygame.init()
-    pygame.display.set_mode((320, 240))
+    pygame.display.set_mode((640, 480))
     pygame.display.set_caption('Maze Player')
 
     target_fps = 30.
@@ -29,7 +29,7 @@ def main():
 
         last_ticks = pygame.time.get_ticks()
         clock.tick()
-        print(clock.get_fps())
+        # print(clock.get_fps())
     pass
 
 
