@@ -4,6 +4,37 @@ import pygame
 import maze_gen
 
 
+class MazeGameEngine:
+    def __init__(self, width, length):
+        self.steps = 0
+        self.player = MazePlayer(0, length - 1)
+        self.goal = (width-1, 0)
+        self.maze = maze_gen.create_maze(length, width)
+
+    def move_up(self):
+        if self.player.y > 0 and self.maze[self.player.y, self.player.x] & 1:
+            self.player.y -= 1
+            self.steps += 1
+
+    def move_down(self):
+        if self.player.y < self.maze.shape[0] and self.maze[self.player.y, self.player.x] & 4:
+            self.player.y += 1
+            self.steps += 1
+
+    def move_left(self):
+        if self.player.x > 0 and self.maze[self.player.y, self.player.x] & 8:
+            self.player.x -= 1
+            self.steps += 1
+
+    def move_right(self):
+        if self.player.x < self.maze.shape[1] and self.maze[self.player.y, self.player.x] & 2:
+            self.player.x += 1
+            self.steps += 1
+
+    def is_finished(self):
+        return self.player.x == self.goal[0] and self.player.y == self.goal[1]
+
+
 class MazePlayer:
     def __init__(self, x, y):
         self.x = x
@@ -21,11 +52,8 @@ class MazeGame:
         pygame.init()
         pygame.display.set_caption('Maze Player')
 
+        self._engine = MazeGameEngine(width, length)
         self._font = pygame.font.SysFont("monospace", 24)
-        self._steps = 0
-        self._player = MazePlayer(0, length - 1)
-        self._goal = (width-1, 0)
-        self._maze = maze_gen.create_maze(length, width)
         self._screen =\
             pygame.display.set_mode(
                 (width * self._CELL_WIDTH + 2 * self._WALL_WIDTH,
@@ -39,26 +67,14 @@ class MazeGame:
                 if event.type == pygame.QUIT:
                     sys.exit()
                 if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_UP \
-                            and self._player.y > 0 \
-                            and self._maze[self._player.y, self._player.x] & 1:
-                        self._player.y -= 1
-                        self._steps += 1
-                    elif event.key == pygame.K_DOWN \
-                            and self._player.y < self._maze.shape[0] \
-                            and self._maze[self._player.y, self._player.x] & 4:
-                        self._player.y += 1
-                        self._steps += 1
-                    elif event.key == pygame.K_LEFT \
-                            and self._player.x > 0 \
-                            and self._maze[self._player.y, self._player.x] & 8:
-                        self._player.x -= 1
-                        self._steps += 1
-                    elif event.key == pygame.K_RIGHT \
-                            and self._player.x < self._maze.shape[1] \
-                            and self._maze[self._player.y, self._player.x] & 2:
-                        self._player.x += 1
-                        self._steps += 1
+                    if event.key == pygame.K_UP:
+                        self._engine.move_up()
+                    elif event.key == pygame.K_DOWN:
+                        self._engine.move_down()
+                    elif event.key == pygame.K_LEFT:
+                        self._engine.move_left()
+                    elif event.key == pygame.K_RIGHT:
+                        self._engine.move_right()
 
             self._screen.fill((0, 0, 0))
 
@@ -71,7 +87,7 @@ class MazeGame:
 
             self._clock.tick(30)
 
-            if self._player.x == self._goal[0] and self._player.y == self._goal[1]:
+            if self._engine.is_finished():
                 break
 
         while True:
@@ -81,13 +97,13 @@ class MazeGame:
             self._clock.tick(30)
 
     def _draw_game_info(self):
-        label = self._font.render(str(self._steps), 1, (255, 255, 0))
+        label = self._font.render(str(self._engine.steps), 1, (255, 255, 0))
         self._screen.blit(label, (10, 10))
 
     def _draw_goal(self):
         shift = 2 * self._WALL_WIDTH
-        left = self._goal[0] * self._CELL_WIDTH + self._WALL_WIDTH + 2 * shift
-        top = self._goal[1] * self._CELL_WIDTH + self._WALL_WIDTH + 2 * shift
+        left = self._engine.goal[0] * self._CELL_WIDTH + self._WALL_WIDTH + 2 * shift
+        top = self._engine.goal[1] * self._CELL_WIDTH + self._WALL_WIDTH + 2 * shift
 
         shrink_width = self._CELL_WIDTH - shift * 4
 
@@ -98,8 +114,8 @@ class MazeGame:
 
     def _draw_player(self):
         shift = 2 * self._WALL_WIDTH
-        left = self._player.x * self._CELL_WIDTH + self._WALL_WIDTH + 2 * shift
-        top = self._player.y * self._CELL_WIDTH + self._WALL_WIDTH + 2 * shift
+        left = self._engine.player.x * self._CELL_WIDTH + self._WALL_WIDTH + 2 * shift
+        top = self._engine.player.y * self._CELL_WIDTH + self._WALL_WIDTH + 2 * shift
 
         shrink_width = self._CELL_WIDTH - shift * 4
 
@@ -109,8 +125,8 @@ class MazeGame:
             [left, top, shrink_width, shrink_width])
 
     def _draw_maze(self):
-        for row_index in range(self._maze.shape[0]):
-            for col_index in range(self._maze.shape[1]):
+        for row_index in range(self._engine.maze.shape[0]):
+            for col_index in range(self._engine.maze.shape[1]):
                 self._draw_cell(row_index, col_index)
 
     def _draw_cell(self, row_index, col_index):
@@ -119,7 +135,7 @@ class MazeGame:
         doubled_wall_width = 2 * self._WALL_WIDTH
         shrink_cell_width = self._CELL_WIDTH - doubled_wall_width
 
-        state = self._maze[row_index, col_index]
+        state = self._engine.maze[row_index, col_index]
 
         if state & 1 == 0:
             self._draw_wall(
