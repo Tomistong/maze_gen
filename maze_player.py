@@ -21,6 +21,8 @@ class MazeGame:
         pygame.init()
         pygame.display.set_caption('Maze Player')
 
+        self._font = pygame.font.SysFont("monospace", 24)
+        self._steps = 0
         self._player = MazePlayer(0, length - 1)
         self._goal = (width-1, 0)
         self._maze = maze_gen.create_maze(length, width)
@@ -41,34 +43,46 @@ class MazeGame:
                             and self._player.y > 0 \
                             and self._maze[self._player.y, self._player.x] & 1:
                         self._player.y -= 1
+                        self._steps += 1
                     elif event.key == pygame.K_DOWN \
                             and self._player.y < self._maze.shape[0] \
                             and self._maze[self._player.y, self._player.x] & 4:
                         self._player.y += 1
+                        self._steps += 1
                     elif event.key == pygame.K_LEFT \
                             and self._player.x > 0 \
                             and self._maze[self._player.y, self._player.x] & 8:
                         self._player.x -= 1
+                        self._steps += 1
                     elif event.key == pygame.K_RIGHT \
                             and self._player.x < self._maze.shape[1] \
                             and self._maze[self._player.y, self._player.x] & 2:
                         self._player.x += 1
+                        self._steps += 1
 
             self._screen.fill((0, 0, 0))
 
             self._draw_maze()
             self._draw_goal()
             self._draw_player()
+            self._draw_game_info()
 
             pygame.display.flip()
+
+            self._clock.tick(30)
 
             if self._player.x == self._goal[0] and self._player.y == self._goal[1]:
                 break
 
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
             self._clock.tick(30)
 
-        while True:
-            self._clock.tick(30)
+    def _draw_game_info(self):
+        label = self._font.render(str(self._steps), 1, (255, 255, 0))
+        self._screen.blit(label, (10, 10))
 
     def _draw_goal(self):
         shift = 2 * self._WALL_WIDTH
