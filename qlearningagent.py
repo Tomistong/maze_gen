@@ -1,7 +1,7 @@
 import random
 
 
-class QLearningController:
+class QLearningAgent:
     def __init__(self, initial_q, learning_rate, discount_factor):
         self._INITIAL_Q = initial_q
         self._LEARNING_RATE = learning_rate
@@ -39,6 +39,9 @@ class QLearningController:
                     self.q[to_state_action] = self._INITIAL_Q
                 if best_q is None or self.q[to_state_action] > best_q:
                     best_q = self.q[to_state_action]
+
+            if from_state_action not in self.q:
+                self.q[from_state_action] = self._INITIAL_Q
 
             self.q[from_state_action] = \
                 (1. - self._LEARNING_RATE) * self.q[from_state_action] + \

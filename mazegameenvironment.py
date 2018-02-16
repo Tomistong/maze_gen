@@ -5,21 +5,22 @@ import pygame
 from mazegameengine import MazeGameEngine
 
 
-class MazeGame:
+class MazeGameEnvironment:
     _WALL_WIDTH = 2
     _CELL_WIDTH = 36
     _PLAYER_COLOR = (0, 255, 0)
     _GOAL_COLOR = (255, 255, 255)
     _WALL_COLOR = (128, 128, 128)
 
-    def __init__(self, count, maze, target, controller, input_manager):
+    def __init__(self, count, maze, player_agent, target_agent, input_manager):
         pygame.init()
         pygame.display.set_caption('Maze Game')
 
         self._count = count
         self._input_manager = input_manager
-        self._controller = controller
-        self._engine = MazeGameEngine(maze, target)
+        self._player_agent = player_agent
+        self._target_agent = target_agent
+        self._engine = MazeGameEngine(maze)
         self._font = pygame.font.SysFont("monospace", 24)
         self._screen =\
             pygame.display.set_mode(
@@ -30,6 +31,8 @@ class MazeGame:
 
     def run(self):
         while True:
+            self._engine.target = self._target_agent.get_position()
+
             self._input_manager.clear()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -47,7 +50,7 @@ class MazeGame:
             from_state = self._engine.get_observation()
 
             direction =\
-                self._controller.get_direction(from_state)
+                self._player_agent.get_direction(from_state)
 
             if direction == 0:
                 self._engine.move_up()
@@ -61,7 +64,7 @@ class MazeGame:
 #            reward = 0 if not self._engine.is_finished() else -len(self._engine.record["a"])
             reward = 0 if not self._engine.is_finished() else 1
 
-            self._controller.update(
+            self._player_agent.update(
                 from_state,
                 direction,
                 self._engine.get_observation(),
@@ -100,8 +103,8 @@ class MazeGame:
 
     def _draw_goal(self):
         shift = 2 * self._WALL_WIDTH
-        left = self._engine.goal[0] * self._CELL_WIDTH + self._WALL_WIDTH + 2 * shift
-        top = self._engine.goal[1] * self._CELL_WIDTH + self._WALL_WIDTH + 2 * shift
+        left = self._engine.target[0] * self._CELL_WIDTH + self._WALL_WIDTH + 2 * shift
+        top = self._engine.target[1] * self._CELL_WIDTH + self._WALL_WIDTH + 2 * shift
 
         shrink_width = self._CELL_WIDTH - shift * 4
 

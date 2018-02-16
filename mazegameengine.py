@@ -2,9 +2,9 @@ from mazeplayer import MazePlayer
 
 
 class MazeGameEngine:
-    def __init__(self, maze, target):
+    def __init__(self, maze):
         self.player = MazePlayer(0, maze.length - 1)
-        self.goal = target
+        self.target = None
         self.maze = maze
         self.record = {"o": [(self.player.x, self.player.y)], "a": []}
 
@@ -12,7 +12,7 @@ class MazeGameEngine:
         return len(self.record["a"])
 
     def get_observation(self):
-        return self.player.x, self.player.y
+        return self.player.x, self.player.y, self.target[0], self.target[1]
 
     def move_up(self):
         if self.player.y > 0 and self.maze.grid[self.player.y, self.player.x] & 1:
@@ -39,4 +39,4 @@ class MazeGameEngine:
         self.record["a"] += [1]
 
     def is_finished(self):
-        return self.player.x == self.goal[0] and self.player.y == self.goal[1]
+        return self.player.x == self.target[0] and self.player.y == self.target[1]
