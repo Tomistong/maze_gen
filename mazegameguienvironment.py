@@ -12,11 +12,13 @@ class MazeGameGuiEnvironment:
     _GOAL_COLOR = (255, 255, 255)
     _WALL_COLOR = (128, 128, 128)
 
-    def __init__(self, count, maze, player_agent, target_agent, input_manager):
+    def __init__(self, maze, player_agent, target_agent, input_manager):
         pygame.init()
         pygame.display.set_caption('Maze Game')
 
-        self._env = MazeGameEnvironment(count, maze, player_agent, target_agent)
+        self.count = 0
+        self.is_visible = True
+        self._env = MazeGameEnvironment(maze, player_agent, target_agent)
         self._input_manager = input_manager
         self._font = pygame.font.SysFont("monospace", 24)
         self._screen =\
@@ -26,41 +28,48 @@ class MazeGameGuiEnvironment:
 
         self._clock = pygame.time.Clock()
 
-    def run(self):
-        while True:
-            self._input_manager.clear()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
-                if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_UP:
-                        self._input_manager.up = True
-                    elif event.key == pygame.K_DOWN:
-                        self._input_manager.down = True
-                    elif event.key == pygame.K_LEFT:
-                        self._input_manager.left = True
-                    elif event.key == pygame.K_RIGHT:
-                        self._input_manager.right = True
+    def reset(self):
+        self.count += 1
+        self._env.reset()
 
-            done = self._env.step()
+    def step(self):
+        self._input_manager.clear()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_UP:
+                    self._input_manager.up = True
+                elif event.key == pygame.K_DOWN:
+                    self._input_manager.down = True
+                elif event.key == pygame.K_LEFT:
+                    self._input_manager.left = True
+                elif event.key == pygame.K_RIGHT:
+                    self._input_manager.right = True
+                elif event.key == pygame.K_g:
+                    self.is_visible = not self.is_visible
 
-            self._screen.fill((0, 0, 0))
+        done = self._env.step()
 
-            self._draw_maze()
-            self._draw_goal()
-            self._draw_player()
-            self._draw_game_info()
+        if not self.is_visible:
+            return done
 
-            pygame.display.flip()
+        self._screen.fill((0, 0, 0))
 
-            if done:
-                break
+        self._draw_maze()
+        self._draw_goal()
+        self._draw_player()
+        self._draw_game_info()
+
+        pygame.display.flip()
+
+        return done
 
     def get_record(self):
         return self._env.get_record()
 
     def _draw_game_info(self):
-        label = self._font.render("{0}: {1}".format(self._env.count, self._env.get_number_of_steps()), 1, (255, 255, 0))
+        label = self._font.render("{0}: {1}".format(self.count, self._env.get_number_of_steps()), 1, (255, 255, 0))
         self._screen.blit(label, (10, 10))
 
     def _draw_goal(self):

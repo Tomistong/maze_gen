@@ -10,3 +10,4 @@ class InputManager:
         self.down = False
         self.left = False
         self.right = False
+

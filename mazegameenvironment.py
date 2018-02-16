@@ -2,11 +2,15 @@ from mazegameengine import MazeGameEngine
 
 
 class MazeGameEnvironment:
-    def __init__(self, count, maze, player_agent, target_agent):
-        self.count = count
+    def __init__(self, maze, player_agent, target_agent):
         self._player_agent = player_agent
         self._target_agent = target_agent
+        self._maze = maze
         self._engine = MazeGameEngine(maze, target_agent.get_position())
+
+    def reset(self):
+        self._target_agent.reset()
+        self._engine = MazeGameEngine(self._maze, self._target_agent.get_position())
 
     def get_state(self, row_index, col_index):
         return self._engine.maze.grid[row_index, col_index]

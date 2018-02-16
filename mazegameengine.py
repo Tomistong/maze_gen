@@ -4,7 +4,6 @@ from mazeplayer import MazePlayer
 class MazeGameEngine:
     def __init__(self, maze, target):
         assert target is not None
-        print(target)
         self.player = MazePlayer(0, maze.length - 1)
         self.target = target
         self.maze = maze
