@@ -8,7 +8,10 @@ class QLearningAgent:
         self._DISCOUNT_FACTOR = discount_factor
         self.q = {}
 
-    def get_direction(self, state):
+    def reset(self):
+        pass
+
+    def get_action(self, state):
         best_q = None
         action = None
         directions = list(range(4))
@@ -23,26 +26,26 @@ class QLearningAgent:
 
         return action
 
-    def update(self, from_state, action, to_state, reward):
-        from_state_action = (from_state, action)
+    def update(self, state_i, action, state_j, reward):
+        state_action_i = (state_i, action)
         if reward != 0:
-            self.q[from_state_action] = \
-                (1. - self._LEARNING_RATE) * self.q[from_state_action] + \
+            self.q[state_action_i] = \
+                (1. - self._LEARNING_RATE) * self.q[state_action_i] + \
                 self._LEARNING_RATE * reward
-            print(self.q[from_state_action])
+            print(self.q[state_action_i])
         else:
             best_q = None
 
             for direction in range(4):
-                to_state_action = (to_state, direction)
-                if to_state_action not in self.q:
-                    self.q[to_state_action] = self._INITIAL_Q
-                if best_q is None or self.q[to_state_action] > best_q:
-                    best_q = self.q[to_state_action]
+                state_action_j = (state_j, direction)
+                if state_action_j not in self.q:
+                    self.q[state_action_j] = self._INITIAL_Q
+                if best_q is None or self.q[state_action_j] > best_q:
+                    best_q = self.q[state_action_j]
 
-            if from_state_action not in self.q:
-                self.q[from_state_action] = self._INITIAL_Q
+            if state_action_i not in self.q:
+                self.q[state_action_i] = self._INITIAL_Q
 
-            self.q[from_state_action] = \
-                (1. - self._LEARNING_RATE) * self.q[from_state_action] + \
+            self.q[state_action_i] = \
+                (1. - self._LEARNING_RATE) * self.q[state_action_i] + \
                 self._LEARNING_RATE * self._DISCOUNT_FACTOR * best_q

@@ -6,11 +6,11 @@ class MazeGameEnvironment:
         self._player_agent = player_agent
         self._target_agent = target_agent
         self._maze = maze
-        self._engine = MazeGameEngine(maze, target_agent.get_position())
+        self._engine = MazeGameEngine(maze)
 
     def reset(self):
         self._target_agent.reset()
-        self._engine = MazeGameEngine(self._maze, self._target_agent.get_position())
+        self._engine = MazeGameEngine(self._maze)
 
     def get_state(self, row_index, col_index):
         return self._engine.maze.grid[row_index, col_index]
@@ -34,26 +34,32 @@ class MazeGameEnvironment:
         return self._engine.maze.width
 
     def step(self):
-        target_moving_direction = \
-            self._target_agent.get_direction()
+        state_i = self._engine.get_observation()
+
+        target_moving_direction = self._target_agent.get_action(state_i)
 
         self._engine.move_target(target_moving_direction)
 
-        self._target_agent.update(self._engine.target)
+        state_j = self._engine.get_observation()
 
-        from_state = self._engine.get_observation()
-
-        player_moving_direction = \
-            self._player_agent.get_direction(from_state)
+        player_moving_direction = self._player_agent.get_action(state_j)
 
         done = self._engine.move_player(player_moving_direction)
+
+        state_k = self._engine.get_observation()
 
         reward = 0 if not done else 1
 
         self._player_agent.update(
-            from_state,
+            state_j,
             player_moving_direction,
-            self._engine.get_observation(),
+            state_k,
             reward)
+
+        self._target_agent.update(
+            state_i,
+            target_moving_direction,
+            state_j,
+            -reward)
 
         return done

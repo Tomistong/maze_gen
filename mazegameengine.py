@@ -1,11 +1,11 @@
 from mazeplayer import MazePlayer
+import random
 
 
 class MazeGameEngine:
-    def __init__(self, maze, target):
-        assert target is not None
+    def __init__(self, maze):
         self.player = MazePlayer(0, maze.length - 1)
-        self.target = target
+        self.target = (random.randrange(maze.width), random.randrange(maze.length))
         self.maze = maze
         self.record = {"o": [(self.player.x, self.player.y)], "a": []}
 
@@ -25,8 +25,10 @@ class MazeGameEngine:
         return self.player.x == self.target[0] and self.player.y == self.target[1]
 
     def move_target(self, direction):
-        self.target = self._move(self.target[0], self.target[1], direction)
-        return self.player.x == self.target[0] and self.player.y == self.target[1]
+        next_position = self._move(self.target[0], self.target[1], direction)
+        if next_position[0] == self.player.x and next_position[1] == self.player.y:
+            return
+        self.target = next_position
 
     def _move(self, position_x, position_y, direction):
         if direction == 0:
