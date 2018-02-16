@@ -4,7 +4,7 @@ import json
 
 from inputmanager import InputManager
 from mazegameguienvironment import MazeGameGuiEnvironment
-from mazegameguienvironment import MazeGameEnvironment
+from mazegameenvironment import MazeGameEnvironment
 from qlearningagent import QLearningAgent
 from targetagent import TargetAgent
 
