@@ -3,14 +3,17 @@ import maze_gen
 import json
 
 from inputmanager import InputManager
-from mazegameenvironment import MazeGameEnvironment
+from mazegameguienvironment import MazeGameGuiEnvironment
+from mazegameguienvironment import MazeGameEnvironment
 from qlearningagent import QLearningAgent
 from targetagent import TargetAgent
 
 
 def main():
-    input_manager = InputManager()
+    use_gui = True
+
     maze = maze_gen.Maze(10, 10)
+    input_manager = InputManager()
 
     player_agent =\
         QLearningAgent(
@@ -22,18 +25,31 @@ def main():
     while True:
         target_agent = TargetAgent(maze)
 
-        game =\
-            MazeGameEnvironment(
-                count,
-                maze,
-                player_agent,
-                target_agent,
-                input_manager)
-        game.run()
-        print(len(game.get_record()["a"]))
+        if use_gui:
+            env = \
+                MazeGameGuiEnvironment(
+                    count,
+                    maze,
+                    player_agent,
+                    target_agent,
+                    input_manager)
+            env.run()
+        else:
+            env =\
+                MazeGameEnvironment(
+                    count,
+                    maze,
+                    player_agent,
+                    target_agent)
+
+            done = env.step()
+            while not done:
+                done = env.step()
+
+        print(len(env.get_record()["a"]))
 
         with open("log/{0}.txt".format(count), "w") as f:
-            f.write(json.dumps(game.get_record()))
+            f.write(json.dumps(env.get_record()))
 
         count += 1
 
