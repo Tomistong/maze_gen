@@ -2,11 +2,10 @@ import random
 
 
 class QLearningController:
-    _INITIAL_Q = 0.1
-    _LEARNING_RATE = 0.5
-    _GAMMA = 0.9
-
-    def __init__(self):
+    def __init__(self, initial_q, learning_rate, discount_factor):
+        self._INITIAL_Q = initial_q
+        self._LEARNING_RATE = learning_rate
+        self._DISCOUNT_FACTOR = discount_factor
         self.q = {}
 
     def get_direction(self, state):
@@ -22,15 +21,13 @@ class QLearningController:
                 best_q = self.q[state_action]
                 action = direction
 
-        print(best_q)
-        print(action)
         return action
 
     def update(self, from_state, action, to_state, reward):
         from_state_action = (from_state, action)
         if reward != 0:
-            self.q[from_state_action] =\
-                (1.-self._LEARNING_RATE) * self.q[from_state_action] +\
+            self.q[from_state_action] = \
+                (1. - self._LEARNING_RATE) * self.q[from_state_action] + \
                 self._LEARNING_RATE * reward
             print(self.q[from_state_action])
         else:
@@ -44,5 +41,5 @@ class QLearningController:
                     best_q = self.q[to_state_action]
 
             self.q[from_state_action] = \
-                (1.-self._LEARNING_RATE) * self.q[from_state_action] + \
-                self._LEARNING_RATE * self._GAMMA * best_q
+                (1. - self._LEARNING_RATE) * self.q[from_state_action] + \
+                self._LEARNING_RATE * self._DISCOUNT_FACTOR * best_q
