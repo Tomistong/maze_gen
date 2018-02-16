@@ -20,7 +20,7 @@ class MazeGameEnvironment:
         self._input_manager = input_manager
         self._player_agent = player_agent
         self._target_agent = target_agent
-        self._engine = MazeGameEngine(maze)
+        self._engine = MazeGameEngine(maze, target_agent.get_position())
         self._font = pygame.font.SysFont("monospace", 24)
         self._screen =\
             pygame.display.set_mode(
@@ -31,8 +31,6 @@ class MazeGameEnvironment:
 
     def run(self):
         while True:
-            self._engine.target = self._target_agent.get_position()
-
             self._input_manager.clear()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -47,26 +45,25 @@ class MazeGameEnvironment:
                     elif event.key == pygame.K_RIGHT:
                         self._input_manager.right = True
 
+            target_moving_direction =\
+                self._target_agent.get_direction()
+
+            self._engine.move_target(target_moving_direction)
+
+            self._target_agent.update(self._engine.target)
+
             from_state = self._engine.get_observation()
 
-            direction =\
+            player_moving_direction =\
                 self._player_agent.get_direction(from_state)
 
-            if direction == 0:
-                self._engine.move_up()
-            elif direction == 1:
-                self._engine.move_right()
-            elif direction == 2:
-                self._engine.move_down()
-            elif direction == 3:
-                self._engine.move_left()
+            done = self._engine.move_player(player_moving_direction)
 
-#            reward = 0 if not self._engine.is_finished() else -len(self._engine.record["a"])
-            reward = 0 if not self._engine.is_finished() else 1
+            reward = 0 if not done else 1
 
             self._player_agent.update(
                 from_state,
-                direction,
+                player_moving_direction,
                 self._engine.get_observation(),
                 reward)
 
@@ -81,7 +78,7 @@ class MazeGameEnvironment:
 
 #            self._clock.tick(60)
 
-            if self._engine.is_finished():
+            if done:
                 break
 
 #        is_paused = True

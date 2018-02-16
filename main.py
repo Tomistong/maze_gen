@@ -31,6 +31,7 @@ def main():
                 input_manager)
         game.run()
         print(len(game.get_record()["a"]))
+
         with open("log/{0}.txt".format(count), "w") as f:
             f.write(json.dumps(game.get_record()))
 
