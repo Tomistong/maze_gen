@@ -50,4 +50,5 @@ class QLearningAgent:
                 (1. - self._LEARNING_RATE) * self.q[state_action_i] + \
                 self._LEARNING_RATE * (reward + self._DISCOUNT_FACTOR * best_q)
 
+
 #            print("{0}: {1}, {2}, {3}, {4}".format(state_action_i, state_j, self.q[state_action_i], best_q, reward))

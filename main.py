@@ -1,5 +1,6 @@
 """ Maze player """
 import maze_gen
+import numpy as np
 
 from inputmanager import InputManager
 from mazegameguienvironment import MazeGameGuiEnvironment
@@ -7,7 +8,7 @@ from qlearningagent import QLearningAgent
 
 
 def main():
-    maze = maze_gen.Maze(15, 15)
+    maze = maze_gen.Maze(5, 5)
     input_manager = InputManager()
 
     player_agent =\
@@ -37,7 +38,8 @@ def main():
             target_agent,
             input_manager)
 
-    while True:
+    count = 0
+    while count < 10000:
         env.reset()
 
         done = env.step()
@@ -45,6 +47,11 @@ def main():
             done = env.step()
 
         print(len(env.get_record()["a"]))
+
+        count += 1
+
+    np.save("q_state_action", np.array((list(k[0] + (k[1], ) for k in player_agent.q))))
+    np.save("q_target_value", np.array((list((v,) for k, v in player_agent.q.items()))))
 
 #        with open("log/{0}.txt".format(env.count), "w") as f:
 #            f.write(json.dumps(env.get_record()))
