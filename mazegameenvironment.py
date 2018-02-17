@@ -6,7 +6,8 @@ class MazeGameEnvironment:
         self._player_agent = player_agent
         self._target_agent = target_agent
         self._maze = maze
-        self._engine = MazeGameEngine(maze)
+
+        self._engine = None
 
     def reset(self):
         self._target_agent.reset()
@@ -40,26 +41,30 @@ class MazeGameEnvironment:
 
         self._engine.move_target(target_moving_direction)
 
+        player_moving_direction = self._player_agent.get_action(state_i)
+
+        is_done = self._engine.move_player(player_moving_direction)
+
         state_j = self._engine.get_observation()
 
-        player_moving_direction = self._player_agent.get_action(state_j)
-
-        done = self._engine.move_player(player_moving_direction)
-
-        state_k = self._engine.get_observation()
-
-        reward = 0 if not done else 1
+        player_reward = 0 if not is_done else 1
+        target_reward = 1 if not is_done else 0
+#        player_reward = target_reward = 0
+#        player_reward = 0
+#        target_reward = 1 if not is_done else 0
 
         self._player_agent.update(
-            state_j,
+            state_i,
             player_moving_direction,
-            state_k,
-            reward)
+            state_j,
+            player_reward,
+            is_done)
 
         self._target_agent.update(
             state_i,
             target_moving_direction,
             state_j,
-            -reward)
+            target_reward,
+            is_done)
 
-        return done
+        return is_done

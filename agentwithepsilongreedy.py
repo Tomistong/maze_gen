@@ -6,11 +6,11 @@ class AgentWithEpsilonGreedy:
         self._epsilon = epsilon
         self._agent = agent
 
-    def get_direction(self, state):
+    def get_action(self, state):
         if random.random() < self._epsilon:
             return random.randrange(4)
         else:
             return self._agent.get_action(state)
 
-    def update(self, from_state, action, to_state, reward):
-        return self._agent.update(from_state, action, to_state, reward)
+    def update(self, state_i, action, state_j, reward, is_done):
+        return self._agent.update(state_i, action, state_j, reward, is_done)

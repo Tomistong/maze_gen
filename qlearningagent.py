@@ -26,9 +26,9 @@ class QLearningAgent:
 
         return action
 
-    def update(self, state_i, action, state_j, reward):
+    def update(self, state_i, action, state_j, reward, is_done):
         state_action_i = (state_i, action)
-        if reward != 0:
+        if is_done:
             self.q[state_action_i] = \
                 (1. - self._LEARNING_RATE) * self.q[state_action_i] + \
                 self._LEARNING_RATE * reward
@@ -48,4 +48,6 @@ class QLearningAgent:
 
             self.q[state_action_i] = \
                 (1. - self._LEARNING_RATE) * self.q[state_action_i] + \
-                self._LEARNING_RATE * self._DISCOUNT_FACTOR * best_q
+                self._LEARNING_RATE * (reward + self._DISCOUNT_FACTOR * best_q)
+
+#            print("{0}: {1}, {2}, {3}, {4}".format(state_action_i, state_j, self.q[state_action_i], best_q, reward))
